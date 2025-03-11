@@ -69,7 +69,7 @@ class SubCategory(models.Model):
     title = models.CharField(max_length=50)
     description = models.TextField(blank=True, null=True)
     image = models.ImageField(upload_to="images/", blank=True, null=True)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, related_name="subcategory")
 
     def __str__(self):
         return self.title
@@ -100,6 +100,7 @@ class Product(models.Model):
     ]
     title = models.CharField(max_length=50)
     price = models.DecimalField(max_digits=5, decimal_places=2)
+    sale = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
     description = models.TextField(default="The description is not available")
     size = models.CharField(max_length=2, choices=SIZE_CHOICES, default="M")
     color = models.CharField(max_length=30, blank=True, null=True)
@@ -113,6 +114,16 @@ class Product(models.Model):
         verbose_name = "Product"
         verbose_name_plural = "Products"
 
+    def get_first_photo(self):
+        if self.photos:
+            try:
+                return self.photos.first().image.url
+            except:
+                return "https://thumbs.dreamstime.com/b/no-image-available-icon-sign-isolated-white-background-simple-vector-logo-no-image-available-icon-sign-isolated-white-271600539.jpg"
+        else:
+            return "https://thumbs.dreamstime.com/b/no-image-available-icon-sign-isolated-white-background-simple-vector-logo-no-image-available-icon-sign-isolated-white-271600539.jpg"
+
+
 class Gallery(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="photos")
     image = models.ImageField(upload_to="images/")
@@ -120,3 +131,7 @@ class Gallery(models.Model):
     class Meta:
         verbose_name = "Photo"
         verbose_name_plural = "Photos"
+
+class Partner(models.Model):
+    title = models.CharField(max_length=50, blank=True, null=True)
+    image = models.ImageField(upload_to="images/", blank=True, null=True)

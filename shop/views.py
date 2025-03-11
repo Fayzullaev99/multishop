@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 
 from shop.models import *
 
@@ -14,13 +14,21 @@ class Index(ListView):
         subcategories = SubCategory.objects.all()
         offers = Offer.objects.all()
         products = Product.objects.all()
-        data = {}
-        data["categories"] = categories
-        data["subcategories"] = subcategories
-        data["offers"] = offers
-        data["products"] = products
+        partners = Partner.objects.all()
+        data = {
+            "categories":categories,
+            "subcategories":subcategories,
+            "offers":offers,
+            "featured_products":products[8:],
+            "recent_products":products[:8],
+            "partners":partners,
+        }
         context["data"] = data
         return context
 
 
+class ProductDetail(DetailView):
+    model = Product
+    context_object_name = "product"
+    template_name = "shop/detail.html"
 

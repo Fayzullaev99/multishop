@@ -9,6 +9,7 @@ class CategoryAdmin(admin.ModelAdmin):
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(SubCategory)
 admin.site.register(Offer)
+admin.site.register(Partner)
 class GallerAdmin(admin.TabularInline):
     model = Gallery
     fk_name = 'product'
