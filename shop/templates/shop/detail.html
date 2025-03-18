@@ -5,22 +5,7 @@
 {% endblock title %}
 
 {% block main %}
-<!-- Breadcrumb Start -->
-<div class="container-fluid">
-    <div class="row px-xl-5">
-        <div class="col-12">
-            <nav class="breadcrumb bg-light mb-30">
-                <a class="breadcrumb-item text-dark" href="#">Home</a>
-                <a class="breadcrumb-item text-dark" href="#">Shop</a>
-                <span class="breadcrumb-item active">Shop Detail</span>
-            </nav>
-        </div>
-    </div>
-</div>
-<!-- Breadcrumb End -->
-
-
-<!-- Shop Detail Start -->
+{% include 'shop/components/breadcrumb.html' %}
 <div class="container-fluid pb-5">
     <div class="row px-xl-5">
         <div class="col-lg-5 mb-30">
