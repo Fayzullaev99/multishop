@@ -60,9 +60,73 @@ class ProductByCategory(ListView):
     }
 
     def get_queryset(self):
-        sort_field = self.request.GET.get("sort")
         category = get_object_or_404(Category, pk=self.kwargs['pk'])
         products =  Product.objects.filter(category=category)
+
+        sort_field = self.request.GET.get("sort")
+        price_field = self.request.GET.getlist("price")
+        color_field = self.request.GET.getlist("color")
+        size_field = self.request.GET.getlist("size")
         if sort_field:
-            products = Product.objects.filter(category=category).order_by(sort_field)
+            products = products.order_by(sort_field)
+        if price_field:
+            price_fields = {
+                '0-100':(0, 100),
+                '100-200':(100, 200),
+                '200-300':(200, 300),
+                '300-400':(300, 400),
+                '400-500':(400, 500),
+            }
+            price_list = [price_fields[pr] for pr in price_field if pr in price_fields ]
+            if price_list:
+                products = products.filter(
+                    price__gte=min(pr[0] for pr in price_list),
+                    price__lte=max(pr[1] for pr in price_list)
+                    )
+        
+        if color_field:
+            products = products.filter(color__in=color_field)
+        
+        if size_field:
+            products = products.filter(size__in=size_field)
         return products
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        category = get_object_or_404(Category, pk=self.kwargs['pk'])
+        products =  Product.objects.filter(category=category)
+        products_100 = products.filter(price__gte=0,price__lte=100).count()
+        products_200 = products.filter(price__gte=100,price__lte=200).count()
+        products_300 = products.filter(price__gte=200,price__lte=300).count()
+        products_400 = products.filter(price__gte=300,price__lte=400).count()
+        products_500 = products.filter(price__gte=400,price__lte=500).count()
+        products_black = products.filter(color='black').count()
+        products_white = products.filter(color='white').count()
+        products_red = products.filter(color='red').count()
+        products_green = products.filter(color='green').count()
+        products_blue = products.filter(color='blue').count()
+        products_xs = products.filter(size='XS').count()
+        products_s = products.filter(size='S').count()
+        products_m = products.filter(size='M').count()
+        products_l = products.filter(size='L').count()
+        products_xl = products.filter(size='XL').count()
+        data = {
+            "products_100":products_100,
+            "products_200":products_200,
+            "products_300":products_300,
+            "products_400":products_400,
+            "products_500":products_500,
+            "products_black":products_black,
+            "products_white":products_white,
+            "products_red":products_red,
+            "products_green":products_green,
+            "products_blue":products_blue,
+            "products_xs":products_xs,
+            "products_s":products_s,
+            "products_m":products_m,
+            "products_l":products_l,
+            "products_xl":products_xl,
+        }
+        context.update(data)
+        return context
+
