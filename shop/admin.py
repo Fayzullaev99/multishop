@@ -20,3 +20,23 @@ class ProductAdmin(admin.ModelAdmin):
     inlines = [GallerAdmin]
     
 admin.site.register(Product, ProductAdmin)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

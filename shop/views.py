@@ -1,6 +1,7 @@
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import ListView, DetailView
-
+from django.contrib.auth import login, logout
+from shop.forms import LoginForm, RegisterForm
 from shop.models import *
 
 class Index(ListView):
@@ -130,3 +131,39 @@ class ProductByCategory(ListView):
         context.update(data)
         return context
 
+def user_login(request):
+    form = LoginForm()
+    context = {
+        "title":"Sign In",
+        "form":form
+    }
+    return render(request, "shop/login.html", context)
+
+def user_register(request):
+    form = RegisterForm()
+    context = {
+        "title":"Sign Up",
+        "form":form
+    }
+    return render(request, "shop/register.html", context)
+
+def signup(request):
+    form = RegisterForm(data=request.POST)
+    if form.is_valid():
+        user = form.save()
+        return redirect("login")
+    else:
+        return redirect("register")
+
+def signin(request):
+    form = LoginForm(data=request.POST)
+    if form.is_valid():
+        user = form.get_user()
+        login(request,user)
+        return redirect("index")
+    else:
+        return redirect("login")
+
+def signout(request):
+    logout(request)
+    return redirect("login")
