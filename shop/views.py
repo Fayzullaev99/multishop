@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import ListView, DetailView
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, authenticate
 from shop.forms import LoginForm, RegisterForm
 from shop.models import *
 
@@ -156,14 +156,31 @@ def signup(request):
         return redirect("register")
 
 def signin(request):
-    form = LoginForm(data=request.POST)
-    if form.is_valid():
-        user = form.get_user()
-        login(request,user)
-        return redirect("index")
+    if request.method == "POST":
+        email = request.POST.get("email")
+        password = request.POST.get("password")
+        user = authenticate(request,username=email,password=password)
+        if user:
+            login(request,user)
+            return redirect("index")
     else:
         return redirect("login")
 
 def signout(request):
     logout(request)
     return redirect("login")
+
+def user_like(request,pk):
+    pass
+
+class LikeList(ListView):
+    model = Like
+    template_name = "shop/likes.html"
+    context_object_name = "products"
+
+    def get_queryset(self):
+        user = self.request.user
+        likes = Like.objects.filter(user=user)
+        products = [like.product for like in likes]
+        return products
+

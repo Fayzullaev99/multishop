@@ -20,6 +20,7 @@ class ProductAdmin(admin.ModelAdmin):
     inlines = [GallerAdmin]
     
 admin.site.register(Product, ProductAdmin)
+admin.site.register(Like)
 
 
 

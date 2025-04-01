@@ -23,8 +23,6 @@ class CustomUserManager(BaseUserManager):
         
         return self.create_user(email=email,password=password, **kwargs)
 
-
-
 class CustomUser(AbstractUser):
     COUNTRY_CHOICES = [
         ("UZB","UZBEKISTAN"),
@@ -123,7 +121,9 @@ class Product(models.Model):
         else:
             return "https://thumbs.dreamstime.com/b/no-image-available-icon-sign-isolated-white-background-simple-vector-logo-no-image-available-icon-sign-isolated-white-271600539.jpg"
 
-
+    def __str__(self):
+        return self.title
+    
 class Gallery(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="photos")
     image = models.ImageField(upload_to="images/")
@@ -135,3 +135,14 @@ class Gallery(models.Model):
 class Partner(models.Model):
     title = models.CharField(max_length=50, blank=True, null=True)
     image = models.ImageField(upload_to="images/", blank=True, null=True)
+
+class Like(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.product.title}"
+    
+
+
+

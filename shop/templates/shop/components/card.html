@@ -1,10 +1,26 @@
+{% load shop_tags %}
+
+
 <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
     <div class="product-item bg-light mb-4">
         <div class="product-img position-relative overflow-hidden" style="height: 422.5px;">
             <img class="img-fluid w-100" src="{{product.get_first_photo}}" alt="">
             <div class="product-action">
                 <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-shopping-cart"></i></a>
-                <a class="btn btn-outline-dark btn-square" href=""><i class="far fa-heart"></i></a>
+                {% if request.user.is_authenticated %}
+                {% get_likes request.user as likes %}
+                <a class="btn btn-outline-dark btn-square" href="{% url 'like' product.pk %}">
+                    {% if product in likes %}
+                    <i class="fas fa-heart text-danger"></i>
+                    {% else %}
+                    <i class="far fa-heart"></i>
+                    {% endif %}
+                </a>
+                {% else %}
+                <a class="btn btn-outline-dark btn-square" href="{% url 'login' %}">
+                    <i class="far fa-heart"></i>
+                </a>
+                {% endif %}
                 <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-sync-alt"></i></a>
                 <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-search"></i></a>
             </div>
