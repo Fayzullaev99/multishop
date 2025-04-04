@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load shop_tags %}
 {% block title %}
 {{title}}
 {% endblock title %}
@@ -27,24 +27,28 @@
                         </div>
                         <div
                             class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <input type="checkbox" class="custom-control-input" id="price-2" name="price" value="100-200">
+                            <input type="checkbox" class="custom-control-input" id="price-2" name="price"
+                                value="100-200">
                             <label class="custom-control-label" for="price-2">$100 - $200</label>
                             <span class="badge border font-weight-normal">{{products_200}}</span>
                         </div>
                         <div
                             class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <input type="checkbox" class="custom-control-input" id="price-3" name="price" value="200-300">
+                            <input type="checkbox" class="custom-control-input" id="price-3" name="price"
+                                value="200-300">
                             <label class="custom-control-label" for="price-3">$200 - $300</label>
                             <span class="badge border font-weight-normal">{{products_300}}</span>
                         </div>
                         <div
                             class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <input type="checkbox" class="custom-control-input" id="price-4" name="price" value="300-400">
+                            <input type="checkbox" class="custom-control-input" id="price-4" name="price"
+                                value="300-400">
                             <label class="custom-control-label" for="price-4">$300 - $400</label>
                             <span class="badge border font-weight-normal">{{products_400}}</span>
                         </div>
                         <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between">
-                            <input type="checkbox" class="custom-control-input" id="price-5" name="price" value="400-500">
+                            <input type="checkbox" class="custom-control-input" id="price-5" name="price"
+                                value="400-500">
                             <label class="custom-control-label" for="price-5">$400 - $500</label>
                             <span class="badge border font-weight-normal">{{products_500}}</span>
                         </div>
@@ -171,7 +175,20 @@
                             <div class="product-action">
                                 <a class="btn btn-outline-dark btn-square" href=""><i
                                         class="fa fa-shopping-cart"></i></a>
-                                <a class="btn btn-outline-dark btn-square" href=""><i class="far fa-heart"></i></a>
+                                {% if request.user.is_authenticated %}
+                                {% get_likes request.user as likes %}
+                                <a class="btn btn-outline-dark btn-square" href="{% url 'like' product.pk %}">
+                                    {% if product in likes %}
+                                    <i class="fas fa-heart text-danger"></i>
+                                    {% else %}
+                                    <i class="far fa-heart"></i>
+                                    {% endif %}
+                                </a>
+                                {% else %}
+                                <a class="btn btn-outline-dark btn-square" href="{% url 'signin' %}">
+                                    <i class="far fa-heart"></i>
+                                </a>
+                                {% endif %}
                                 <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-sync-alt"></i></a>
                                 <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-search"></i></a>
                             </div>

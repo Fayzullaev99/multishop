@@ -131,13 +131,7 @@ class ProductByCategory(ListView):
         context.update(data)
         return context
 
-def user_login(request):
-    form = LoginForm()
-    context = {
-        "title":"Sign In",
-        "form":form
-    }
-    return render(request, "shop/login.html", context)
+
 
 def user_register(request):
     form = RegisterForm()
@@ -148,30 +142,50 @@ def user_register(request):
     return render(request, "shop/register.html", context)
 
 def signup(request):
-    form = RegisterForm(data=request.POST)
-    if form.is_valid():
-        user = form.save()
-        return redirect("login")
-    else:
-        return redirect("register")
+    form = RegisterForm(data=request.POST or None)
+    if request.method == "POST":
+        if form.is_valid():
+            user = form.save()
+            return redirect("signin")
+    context = {
+        "title":"Sign Up",
+        "form":form
+    }
+    return render(request, "shop/register.html", context)
 
 def signin(request):
+    form = LoginForm(data=request.POST or None)
     if request.method == "POST":
-        email = request.POST.get("email")
-        password = request.POST.get("password")
-        user = authenticate(request,username=email,password=password)
-        if user:
-            login(request,user)
-            return redirect("index")
-    else:
-        return redirect("login")
+        if form.is_valid():
+            email = request.POST.get("email")
+            password = request.POST.get("password")
+            user = authenticate(request,username=email,password=password)
+            if user:
+                login(request,user)
+                return redirect("index")
+    context = {
+        "title":"Sign In",
+        "form":form
+    }
+    return render(request, "shop/login.html", context)
 
 def signout(request):
     logout(request)
-    return redirect("login")
+    return redirect("signin")
 
 def user_like(request,pk):
-    pass
+    user = request.user if request.user.is_authenticated else None
+    product = Product.objects.get(pk=pk)
+    if user:
+        user_products = Like.objects.filter(user=user)
+        if product in [like.product for like in user_products]:
+            like_product = Like.objects.filter(user=user,product=product)
+            like_product.delete()
+        else:
+            Like.objects.create(user=user,product=product)
+    next_page = request.META.get("HTTP_REFERER","index")
+    return redirect(next_page)
+            
 
 class LikeList(ListView):
     model = Like
@@ -184,3 +198,10 @@ class LikeList(ListView):
         products = [like.product for like in likes]
         return products
 
+# def user_login(request):
+#     form = LoginForm()
+#     context = {
+#         "title":"Sign In",
+#         "form":form
+#     }
+#     return render(request, "shop/login.html", context)
