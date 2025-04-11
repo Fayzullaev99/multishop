@@ -131,16 +131,6 @@ class ProductByCategory(ListView):
         context.update(data)
         return context
 
-
-
-def user_register(request):
-    form = RegisterForm()
-    context = {
-        "title":"Sign Up",
-        "form":form
-    }
-    return render(request, "shop/register.html", context)
-
 def signup(request):
     form = RegisterForm(data=request.POST or None)
     if request.method == "POST":
@@ -186,7 +176,6 @@ def user_like(request,pk):
     next_page = request.META.get("HTTP_REFERER","index")
     return redirect(next_page)
             
-
 class LikeList(ListView):
     model = Like
     template_name = "shop/likes.html"
@@ -198,10 +187,15 @@ class LikeList(ListView):
         products = [like.product for like in likes]
         return products
 
-# def user_login(request):
-#     form = LoginForm()
-#     context = {
-#         "title":"Sign In",
-#         "form":form
-#     }
-#     return render(request, "shop/login.html", context)
+def contact(request):
+    if request.method == "POST":
+        full_name = request.POST.get("full_name")
+        email = request.POST.get("email")
+        subject = request.POST.get("subject")
+        message = request.POST.get("message")
+        Contact.objects.create(full_name=full_name,email=email,subject=subject,message=message)
+
+    context = {
+        "title":"Contact",
+    }
+    return render(request, "shop/contact.html", context)

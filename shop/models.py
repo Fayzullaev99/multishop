@@ -143,6 +143,46 @@ class Like(models.Model):
     def __str__(self):
         return f"{self.user.username} - {self.product.title}"
     
+class Contact(models.Model):
+    full_name = models.CharField(max_length=100)
+    email = models.EmailField()
+    subject = models.CharField(max_length=150)
+    message = models.TextField()
 
+    def __str__(self):
+        return self.full_name
 
+class Basket(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name="baskets")
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, related_name="basket_items")
 
+    class Meta:
+        unique_together = ("user","product")
+
+    def __str__(self):
+        return self.user.email
+        
+    def get_total_quantity(self):
+        basket_products = self.basketproduct_set.all()
+        total_quantity = sum([product.quantity for product in basket_products])
+        return total_quantity
+    
+    def get_total_price(self):
+        basket_products = self.basketproduct_set.all()
+        total_price = sum([product.get_total_price for product in basket_products])
+        return total_price
+    
+class BasketProduct(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
+    user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
+    quantity = models.PositiveIntegerField(default=1)
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.product.title
+    
+    def get_total_price(self):
+        if self.product.sale:
+            return self.quantity * self.product.sale
+        return self.quantity * self.product.price
+    
